@@ -56,6 +56,7 @@ var HSIndicator = (function(url){
         if(isStarted()) {
             stop();
         }
+        resolve();
         timer = setInterval(resolve, timeout);
         return this;
     };
