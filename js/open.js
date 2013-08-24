@@ -10,6 +10,8 @@ var HSIndicator = {
         retry : []
     },
 
+    timer : undefined,
+
     resolve : function() {
         jQuery.ajax({
             type : 'GET',
@@ -48,5 +50,24 @@ var HSIndicator = {
     retry : function(callback) {
         HSIndicator.callbacks.retry.push(callback);
         return HSIndicator;
+    },
+
+    start : function(timeout) {
+        if(HSIndicator.isStarted()) {
+            HSIndicator.stop();
+        }
+        HSIndicator.timer = setInterval(HSIndicator.resolve, timeout);
+    },
+
+    stop : function() {
+        if(HSIndicator.timer) {
+            clearInterval(HSIndicator.timer);
+            HSIndicator.timer = undefined;
+        }
+    },
+
+    isStarted : function() {
+        return (HSIndicator.timer) ? true : false;
     }
+
 };
