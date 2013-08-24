@@ -12,11 +12,6 @@ var HSIndicator = (function(url){
 
     timer = undefined;
 
-    function api(URL) {
-        API.url = URL;
-        return this;
-    };
-
     function resolve() {
         jQuery.ajax({
             type : 'GET',
@@ -62,6 +57,7 @@ var HSIndicator = (function(url){
             stop();
         }
         timer = setInterval(resolve, timeout);
+        return this;
     };
 
     function stop() {
@@ -69,6 +65,7 @@ var HSIndicator = (function(url){
             clearInterval(timer);
             timer = undefined;
         }
+        return this;
     };
 
     function isStarted() {
@@ -76,7 +73,6 @@ var HSIndicator = (function(url){
     }
 
     return {
-        api : api,
         onOpen : onOpen,
         onClose : onClose,
         error : error,
