@@ -1,9 +1,6 @@
 var HSIndicator = (function(url){
-    var API = {
-        url : url
-    },
 
-    callbacks = {
+    var callbacks = {
         onOpen : [],
         onClose : [],
         error : [],
@@ -15,7 +12,7 @@ var HSIndicator = (function(url){
     function resolve() {
         jQuery.ajax({
             type : 'GET',
-            url : API.url, //TODO test w/o "HSIndicator" for fun and profit.
+            url : url, //TODO test w/o "HSIndicator" for fun and profit.
             beforeSend : function() {
                 callbacks.retry.forEach(function(what) { what(); });
             }
