@@ -9,6 +9,8 @@ Currently available implementations:
 
 ** JavaScript
 
+NOTE: Requires [[http://jquery.com/][jQuery]].
+
 Simple usage example:
 
 #+BEGIN_SRC javascript
