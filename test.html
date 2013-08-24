@@ -13,7 +13,7 @@
     <h1>HS Open Status Indicator</h1>
     <h2>Examples</h2>
 
-    <div id="hs-state-container">Hackerspace Kraków is <span id="hs-state"></span><br />
+    <div id="hs-state-container"><del>Hackerspace Kraków</del><ins>bytewerk</ins> is <span id="hs-state"></span><br />
     Last updated: <span id="hs-timestamp"></span></div>
 
     <script>
@@ -21,12 +21,13 @@ function updateTimestamp(state) {
     var statusString = 'Not Available';
     if(state.lastchange) {
         var date = new Date(state.lastchange * 1000);
-        statusString = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+        statusString = date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
     }
     jQuery('#hs-timestamp').html(statusString);
 }
 
-HSIndicator("http://spaceapi.hskrk.pl").onOpen(function() {
+//HSIndicator("http://spaceapi.hskrk.pl").onOpen(function() {
+HSIndicator("http://spaceapi.net/cache/bytewerk").onOpen(function() {
     jQuery('#hs-state-container').css('background-color', 'green');
     jQuery('#hs-state').html('OPEN');
 }).onOpen(updateTimestamp).onClosed(function() {
