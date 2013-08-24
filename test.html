@@ -25,7 +25,7 @@ HSIndicator("http://spaceapi.hskrk.pl").onOpen(function() {
     jQuery('#hs-state-container').css('background-color', 'green');
     jQuery('#hs-state').html('OPEN');
     updateTimestamp();
-}).onClose(function() {
+}).onClosed(function() {
     jQuery('#hs-state-container').css('background-color', 'red');
     jQuery('#hs-state').html('CLOSED');
     updateTimestamp();    

@@ -2,7 +2,7 @@ var HSIndicator = (function(url){
 
     var callbacks = {
         onOpen : [],
-        onClose : [],
+        onClosed : [],
         error : [],
         retry : []
     },
@@ -21,7 +21,7 @@ var HSIndicator = (function(url){
                 callbacks.onOpen.forEach(function(what) { what(); });
             }
             else {
-                callbacks.onClose.forEach(function(what) { what(); });
+                callbacks.onClosed.forEach(function(what) { what(); });
             }
         }).fail(function(err) {
             callbacks.error.forEach(function(what) { what(err); });
@@ -34,8 +34,8 @@ var HSIndicator = (function(url){
         return this;
     };
 
-    function onClose(callback) {
-        callbacks.onClose.push(callback);
+    function onClosed(callback) {
+        callbacks.onClosed.push(callback);
         return this;
     };
 
@@ -71,7 +71,7 @@ var HSIndicator = (function(url){
 
     return {
         onOpen : onOpen,
-        onClose : onClose,
+        onClosed : onClosed,
         error : error,
         retry : retry,
         start : start,
