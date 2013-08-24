@@ -75,7 +75,8 @@ var HSIndicator = (function(url){
         error : error,
         retry : retry,
         start : start,
-        stop : stop
+        stop : stop,
+        check : resolve
     };
 
 });
