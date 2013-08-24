@@ -3,7 +3,7 @@ var HSIndicator = {
         url : "http://spaceapi.hskrk.pl/"
     },
 
-    isOpen : function(onOpen, onClosed) {
+    onOpenState : function(onOpen, onClosed) {
         jQuery.ajax({
             type : 'GET',
             url : HSIndicator.API.url, //TODO test w/o "HSIndicator" for fun and profit.
