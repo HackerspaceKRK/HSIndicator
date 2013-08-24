@@ -10,7 +10,7 @@ var HSIndicator = {
         retry : []
     },
 
-    resolve : function(onOpen, onClosed) {
+    resolve : function() {
         jQuery.ajax({
             type : 'GET',
             url : HSIndicator.API.url, //TODO test w/o "HSIndicator" for fun and profit.
@@ -22,7 +22,7 @@ var HSIndicator = {
                 HSIndicator.callbacks.onOpen.forEach(function(what) { what(); });
             }
             else {
-                HSIndicator.callbacks.onClosed.forEach(function(what) { what(); });
+                HSIndicator.callbacks.onClose.forEach(function(what) { what(); });
             }
         }).fail(function(err) {
             HSIndicator.callbacks.error.forEach(function(what) { what(err); });
@@ -31,18 +31,22 @@ var HSIndicator = {
     },
 
     onOpen : function(callback) {
-        HSIndicator.callback.onOpen.append(callback);
+        HSIndicator.callbacks.onOpen.push(callback);
+        return HSIndicator;
     },
 
     onClose : function(callback) {
-        HSIndicator.callback.onClose.append(callback);
+        HSIndicator.callbacks.onClose.push(callback);
+        return HSIndicator;
     },
 
     error : function(callback) {
-        HSIndicator.callback.error.append(callback);
+        HSIndicator.callbacks.error.push(callback);
+        return HSIndicator;
     },
 
     retry : function(callback) {
-        HSIndicator.callback.retry.append(callback);
+        HSIndicator.callbacks.retry.push(callback);
+        return HSIndicator;
     }
 };
