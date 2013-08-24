@@ -17,14 +17,17 @@ var HSIndicator = (function(url){
                 callbacks.retry.forEach(function(what) { what(); });
             }
         }).done(function(data) {
+            if(data.api != '0.13') {
+                console.warn('Fetchnig data from SpaceAPI v.' + data.api + '; this tool supports only SpaceAPI v.0.13.');
+            }
             if(data.state.open) {
                 callbacks.onOpen.forEach(function(what) { what({lastchange : data.state.lastchange}); });
             }
             else {
                 callbacks.onClosed.forEach(function(what) { what({lastchange : data.state.lastchange}); });
             }
-        }).fail(function(err) {
-            callbacks.error.forEach(function(what) { what(err); });
+        }).fail(function(jqXHR, errText, err) {
+            callbacks.error.forEach(function(what) { what(errText, err); });
         });
         return this;
     };
