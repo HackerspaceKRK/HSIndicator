@@ -18,10 +18,10 @@ var HSIndicator = (function(url){
             }
         }).done(function(data) {
             if(data.state.open) {
-                callbacks.onOpen.forEach(function(what) { what(); });
+                callbacks.onOpen.forEach(function(what) { what({lastchange : data.state.lastchange}); });
             }
             else {
-                callbacks.onClosed.forEach(function(what) { what(); });
+                callbacks.onClosed.forEach(function(what) { what({lastchange : data.state.lastchange}); });
             }
         }).fail(function(err) {
             callbacks.error.forEach(function(what) { what(err); });
