@@ -1,0 +1,7 @@
+#+title: TODO list.
+#+startup: hidestars
+
+
+* General
+
+** TODO Support for custom Open/Closed icons fetched from API-provided URIs.
