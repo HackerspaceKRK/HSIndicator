@@ -3,7 +3,7 @@ var HSIndicator = {
         url : "http://spaceapi.hskrk.pl/"
     },
 
-    callbacks {
+    callbacks : {
         onOpen : [],
         onClose : [],
         error : [],
