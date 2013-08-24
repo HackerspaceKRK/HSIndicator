@@ -7,3 +7,7 @@
 ** TODO Support for custom Open/Closed icons fetched from API-provided URIs.
 
 ** TODO Support for multiple API versions (current works only for 0.13)
+
+** TODO Support for custom message.
+
+** TODO Support for triggering user.
