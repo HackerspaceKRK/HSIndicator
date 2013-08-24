@@ -26,10 +26,10 @@ function updateTimestamp(state) {
     jQuery('#hs-timestamp').html(statusString);
 }
 
-//HSIndicator("http://spaceapi.hskrk.pl").onOpen(function() {
+HSIndicator("http://spaceapi.hskrk.pl").onOpen(function() {
 //HSIndicator("http://spaceapi.net/cache/bytewerk").onOpen(function() {
 //HSIndicator("http://club.entropia.de/spaceapi").onOpen(function() {
-HSIndicator("http://hive13.org/isOpen/api.php").onOpen(function() {
+//HSIndicator("http://hive13.org/isOpen/api.php").onOpen(function() {
     jQuery('#hs-state-container').css('background-color', 'green');
     jQuery('#hs-state').html('OPEN');
 }).onOpen(updateTimestamp).onClosed(function() {

@@ -1,13 +1,46 @@
 var HSIndicator = (function(url){
-
+    
     var callbacks = {
         onOpen : [],
         onClosed : [],
         error : [],
         retry : []
-    },
+        },
 
-    timer = undefined;
+        versionConverters = {
+            '0.8' : function(data) {
+                return { state : { open : data.open,
+                                   lastchange : data.lastchange,
+                                   icon : { open : undefined, closed : undefined },
+                                   message : data.status,
+                                   trigger_person : undefined}};
+            },
+            '0.9' : function(data) {
+                return { state : { open : data.open,
+                                   lastchange : data.lastchange,
+                                   icon : { open : undefined, closed : undefined },
+                                   message : data.status,
+                                   trigger_person : undefined}};
+            },
+            '0.11' : function(data) {
+                return { state : { open : data.open,
+                                   lastchange : data.lastchange,
+                                   icon : data.icon,
+                                   message : data.status,
+                                   trigger_person : undefined}};
+            },
+            '0.12' : function(data) {
+                return { state : { open : data.open,
+                                   lastchange : data.lastchange,
+                                   icon : data.icon,
+                                   message : data.status,
+                                   trigger_person : undefined}};
+            },
+            '0.13' : function(data) {
+                return data;
+            }}
+        
+        timer = undefined;
 
     function resolve() {
         jQuery.ajax({
@@ -16,15 +49,13 @@ var HSIndicator = (function(url){
             beforeSend : function() {
                 callbacks.retry.forEach(function(what) { what(); });
             }
-        }).done(function(data) {
-            if(data.api != '0.13') {
-                console.warn('Fetchnig data from SpaceAPI v.' + data.api + '; this tool supports only SpaceAPI v.0.13.');
-            }
+        }).done(function(result) {
+            data = versionConverters[result.api](result);
             if(data.state.open) {
-                callbacks.onOpen.forEach(function(what) { what({lastchange : data.state.lastchange}); });
+                callbacks.onOpen.forEach(function(what) { what(data); });
             }
             else {
-                callbacks.onClosed.forEach(function(what) { what({lastchange : data.state.lastchange}); });
+                callbacks.onClosed.forEach(function(what) { what(data); });
             }
         }).fail(function(jqXHR, errText, err) {
             callbacks.error.forEach(function(what) { what(errText, err); });
