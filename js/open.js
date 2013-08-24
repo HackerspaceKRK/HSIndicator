@@ -1,6 +1,6 @@
-var HSIndicator = (function(){
+var HSIndicator = (function(url){
     var API = {
-        url : "http://spaceapi.hskrk.pl/"
+        url : url
     },
 
     callbacks = {
@@ -85,4 +85,4 @@ var HSIndicator = (function(){
         stop : stop
     };
 
-})();
+});

@@ -12,7 +12,7 @@ Currently available implementations:
 Simple usage example:
 
 #+BEGIN_SRC javascript
-  HSIndicator.api("http://spaceapi.hskrk.pl/")
+  HSIndicator("http://spaceapi.hskrk.pl/")
       .onOpen(function() { 
           //code if open
       }).onClose(function () {
