@@ -12,7 +12,7 @@ var HSIndicator = (function(url){
     function resolve() {
         jQuery.ajax({
             type : 'GET',
-            url : url, //TODO test w/o "HSIndicator" for fun and profit.
+            url : url,
             beforeSend : function() {
                 callbacks.retry.forEach(function(what) { what(); });
             }
