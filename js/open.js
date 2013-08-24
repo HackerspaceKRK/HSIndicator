@@ -1,78 +1,88 @@
-var HSIndicator = {
-    API : {
+var HSIndicator = (function(){
+    var API = {
         url : "http://spaceapi.hskrk.pl/"
     },
 
-    callbacks : {
+    callbacks = {
         onOpen : [],
         onClose : [],
         error : [],
         retry : []
     },
 
-    timer : undefined,
+    timer = undefined;
 
-    api : function(URL) {
-        HSIndicator.API.url = URL;
-        return HSIndicator;
-    },
+    function api(URL) {
+        API.url = URL;
+        return this;
+    };
 
-    resolve : function() {
+    function resolve() {
         jQuery.ajax({
             type : 'GET',
-            url : HSIndicator.API.url, //TODO test w/o "HSIndicator" for fun and profit.
+            url : API.url, //TODO test w/o "HSIndicator" for fun and profit.
             beforeSend : function() {
-                HSIndicator.callbacks.retry.forEach(function(what) { what(); });
+                callbacks.retry.forEach(function(what) { what(); });
             }
         }).done(function(data) {
             if(data.state.open) {
-                HSIndicator.callbacks.onOpen.forEach(function(what) { what(); });
+                callbacks.onOpen.forEach(function(what) { what(); });
             }
             else {
-                HSIndicator.callbacks.onClose.forEach(function(what) { what(); });
+                callbacks.onClose.forEach(function(what) { what(); });
             }
         }).fail(function(err) {
-            HSIndicator.callbacks.error.forEach(function(what) { what(err); });
+            callbacks.error.forEach(function(what) { what(err); });
         });
-        return HSIndicator;
-    },
+        return this;
+    };
 
-    onOpen : function(callback) {
-        HSIndicator.callbacks.onOpen.push(callback);
-        return HSIndicator;
-    },
+    function onOpen(callback) {
+        callbacks.onOpen.push(callback);
+        return this;
+    };
 
-    onClose : function(callback) {
-        HSIndicator.callbacks.onClose.push(callback);
-        return HSIndicator;
-    },
+    function onClose(callback) {
+        callbacks.onClose.push(callback);
+        return this;
+    };
 
-    error : function(callback) {
-        HSIndicator.callbacks.error.push(callback);
-        return HSIndicator;
-    },
+    function error(callback) {
+        callbacks.error.push(callback);
+        return this;
+    };
 
-    retry : function(callback) {
-        HSIndicator.callbacks.retry.push(callback);
-        return HSIndicator;
-    },
+    function retry(callback) {
+        callbacks.retry.push(callback);
+        return this;
+    };
 
-    start : function(timeout) {
-        if(HSIndicator.isStarted()) {
-            HSIndicator.stop();
+    function start(timeout) {
+        if(isStarted()) {
+            stop();
         }
-        HSIndicator.timer = setInterval(HSIndicator.resolve, timeout);
-    },
+        timer = setInterval(resolve, timeout);
+    };
 
-    stop : function() {
-        if(HSIndicator.timer) {
-            clearInterval(HSIndicator.timer);
-            HSIndicator.timer = undefined;
+    function stop() {
+        if(timer) {
+            clearInterval(timer);
+            timer = undefined;
         }
-    },
+    };
 
-    isStarted : function() {
-        return (HSIndicator.timer) ? true : false;
+    function isStarted() {
+        return (timer) ? true : false;
     }
 
-};
+    return {
+        api : api,
+        onOpen : onOpen,
+        onClose : onClose,
+        error : error,
+        retry : retry,
+        start : start,
+        stop : stop
+    };
+
+})();
