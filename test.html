@@ -10,7 +10,28 @@
 
 
   <body>
-    Foo Bar.
+    <h1>HS Open Status Indicator</h1>
+    <h2>Examples</h2>
+
+    <div id="hs-state-container">Hackerspace Kraków is <span id="hs-state"></span><br />
+    Last updated: <span id="hs-timestamp"></span></div>
+
+    <script>
+function updateTimestamp() {
+    //TODO
+}
+
+HSIndicator("http://spaceapi.hskrk.pl").onOpen(function() {
+    jQuery('#hs-state-container').css('background-color', 'green');
+    jQuery('#hs-state').html('OPEN');
+    updateTimestamp();
+}).onClose(function() {
+    jQuery('#hs-state-container').css('background-color', 'red');
+    jQuery('#hs-state').html('CLOSED');
+    updateTimestamp();    
+}).check();
+
+    </script>
   </body>
 
 </html>
