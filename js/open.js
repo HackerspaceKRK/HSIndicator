@@ -12,6 +12,11 @@ var HSIndicator = {
 
     timer : undefined,
 
+    api : function(URL) {
+        HSIndicator.API.url = URL;
+        return HSIndicator;
+    },
+
     resolve : function() {
         jQuery.ajax({
             type : 'GET',
