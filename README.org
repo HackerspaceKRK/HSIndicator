@@ -1,12 +1,13 @@
-#+title: HS State Indicator
 #+startup: hidestars
+
+* HS State Indicator
 
 A set of simple tools for querying the open/closed state of a Hackerspace through [[http://spaceapi.net/][SpaceAPI]].
 
 Currently available implementations:
 - JavaScript.
 
-* JavaScript
+** JavaScript
 
 Simple usage example:
 
