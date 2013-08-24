@@ -5,3 +5,5 @@
 * General
 
 ** TODO Support for custom Open/Closed icons fetched from API-provided URIs.
+
+** TODO Support for multiple API versions (current works only for 0.13)
