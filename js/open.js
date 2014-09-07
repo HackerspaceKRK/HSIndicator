@@ -71,7 +71,10 @@
   }
 
   function setURL(url) {
-    return new HSIndicator(url);
+    // Create new object only if url is provided
+    if (url) return new HSIndicator(url);
+    // Otherwise try to provide first item in the initialized list.
+    else if (initialized.length > 0 && initialized[0]) return initialized[0];
   }
 
   window.HSIndicator = setURL;
