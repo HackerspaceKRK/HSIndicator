@@ -1,117 +1,153 @@
-var HSIndicator = (function(url){
-    
-    var callbacks = {
-        onOpen : [],
-        onClosed : [],
-        error : [],
-        retry : []
-        },
+(function (window, $) {
+  "use strict";
 
-        versionConverters = {
-            '0.8' : function(data) {
-                return { state : { open : data.open,
-                                   lastchange : data.lastchange,
-                                   icon : { open : undefined, closed : undefined },
-                                   message : data.status,
-                                   trigger_person : undefined}};
+  var initialized = [],
+    versionConverters = {
+      '0.8': function (data) {
+        return {
+          state: {
+            open: data.open,
+            lastchange: data.lastchange,
+            icon: {
+              open: undefined,
+              closed: undefined
             },
-            '0.9' : function(data) {
-                return { state : { open : data.open,
-                                   lastchange : data.lastchange,
-                                   icon : { open : undefined, closed : undefined },
-                                   message : data.status,
-                                   trigger_person : undefined}};
+            message: data.status,
+            trigger_person: undefined
+          }
+        };
+      },
+      '0.9': function (data) {
+        return {
+          state: {
+            open: data.open,
+            lastchange: data.lastchange,
+            icon: {
+              open: undefined,
+              closed: undefined
             },
-            '0.11' : function(data) {
-                return { state : { open : data.open,
-                                   lastchange : data.lastchange,
-                                   icon : data.icon,
-                                   message : data.status,
-                                   trigger_person : undefined}};
-            },
-            '0.12' : function(data) {
-                return { state : { open : data.open,
-                                   lastchange : data.lastchange,
-                                   icon : data.icon,
-                                   message : data.status,
-                                   trigger_person : undefined}};
-            },
-            '0.13' : function(data) {
-                return data;
-            }}
-        
-        timer = undefined;
+            message: data.status,
+            trigger_person: undefined
+          }
+        };
+      },
+      '0.11': function (data) {
+        return {
+          state: {
+            open: data.open,
+            lastchange: data.lastchange,
+            icon: data.icon,
+            message: data.status,
+            trigger_person: undefined
+          }
+        };
+      },
+      '0.12': function (data) {
+        return {
+          state: {
+            open: data.open,
+            lastchange: data.lastchange,
+            icon: data.icon,
+            message: data.status,
+            trigger_person: undefined
+          }
+        };
+      },
+      '0.13': function (data) {
+        return data;
+      }
+    };
 
-    function resolve() {
-        jQuery.ajax({
-            type : 'GET',
-            url : url,
-            beforeSend : function() {
-                callbacks.retry.forEach(function(what) { what(); });
-            }
-        }).done(function(result) {
-            data = versionConverters[result.api](result);
-            if(data.state.open) {
-                callbacks.onOpen.forEach(function(what) { what(data); });
-            }
-            else {
-                callbacks.onClosed.forEach(function(what) { what(data); });
-            }
-        }).fail(function(jqXHR, errText, err) {
-            callbacks.error.forEach(function(what) { what(errText, err); });
+
+  function HSIndicator(url) {
+    this.url = url;
+    this.callbacks = {
+      onOpen: [],
+      onClosed: [],
+      error: [],
+      retry: []
+    };
+    return this;
+  }
+
+  function setURL(url) {
+    return new HSIndicator(url);
+  }
+
+  window.HSIndicator = setURL;
+
+  HSIndicator.prototype.resolve = function resolve() {
+    var self = this;
+    $.ajax({
+      type: 'GET',
+      url: this.url,
+      beforeSend: function () {
+        self.callbacks.retry.forEach(function (what) {
+          what();
         });
-        return this;
-    };
+      }
+    }).done(function (result) {
+      console.log(result);
+      var data = versionConverters[result.api](result);
+      if (data.state.open) {
+        self.callbacks.onOpen.forEach(function (what) {
+          what(data);
+        });
+      } else {
+        self.callbacks.onClosed.forEach(function (what) {
+          what(data);
+        });
+      }
+    }).fail(function (jqXHR, errText, err) {
+      self.callbacks.error.forEach(function (what) {
+        what(errText, err);
+      });
+    });
+  };
 
-    function onOpen(callback) {
-        callbacks.onOpen.push(callback);
-        return this;
-    };
+  HSIndicator.prototype.onOpen = function onOpen(callback) {
+    this.callbacks.onOpen.push(callback);
+  };
 
-    function onClosed(callback) {
-        callbacks.onClosed.push(callback);
-        return this;
-    };
+  HSIndicator.prototype.onClosed = function onClosed(callback) {
+    this.callbacks.onClosed.push(callback);
+  };
 
-    function error(callback) {
-        callbacks.error.push(callback);
-        return this;
-    };
+  HSIndicator.prototype.error = function error(callback) {
+    this.callbacks.error.push(callback);
+  };
 
-    function retry(callback) {
-        callbacks.retry.push(callback);
-        return this;
-    };
+  HSIndicator.prototype.retry = function retry(callback) {
+    this.callbacks.retry.push(callback);
+  };
 
-    function start(timeout) {
-        if(isStarted()) {
-            stop();
-        }
-        resolve();
-        timer = setInterval(resolve, timeout);
-        return this;
-    };
-
-    function stop() {
-        if(timer) {
-            clearInterval(timer);
-            timer = undefined;
-        }
-        return this;
-    };
-
-    function isStarted() {
-        return (timer) ? true : false;
+  HSIndicator.prototype.start = function start(timeout) {
+    if (this.timer) {
+      this.stop();
     }
+    this.resolve();
+    this.timer = setInterval(this.resolve.bind(this), timeout);
+    initialized.push(this);
+  };
 
-    return {
-        onOpen : onOpen,
-        onClosed : onClosed,
-        error : error,
-        retry : retry,
-        start : start,
-        stop : stop,
-        check : resolve
-    };
+  HSIndicator.prototype.stop = function stop() {
+    if (this.timer) {
+      clearInterval(this.timer);
+      delete this.timer;
+    }
+  };
 
-});
+  HSIndicator.prototype.stopAll = function stopAll() {
+    initialized.forEach(function (item) {
+      clearInterval(item.timer);
+      item = undefined;
+    });
+  };
+
+  HSIndicator.prototype.getInitialized = function getInitialized() {
+    return initialized;
+  };
+
+
+})(window, jQuery);
+
