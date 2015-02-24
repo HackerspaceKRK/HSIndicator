@@ -1,4 +1,4 @@
-(function (window, $) {
+(function (window) {
   "use strict";
 
   var initialized = [],
@@ -58,14 +58,29 @@
       }
     };
 
+  function getResponse(result, isOpen, isClosed) {
+    result = JSON.parse(result);
+    var i = 0,
+      data = versionConverters[result.api](result),
+      len;
+    if (data.state.open) {
+      for (i = 0, len = isOpen.length; i < len; i++) {
+        isOpen[i](data);
+      }
+    } else {
+      for (i = 0, len = isClosed.length; i < len; i++) {
+        isClosed[i](data);
+      }
+    }
+  }
 
   function HSIndicator(url) {
     this.url = url;
     this.callbacks = {
-      onOpen: [],
-      onClosed: [],
-      error: [],
-      retry: []
+      isOpen: [],
+      isClosed: [],
+      onError: [],
+      onRequest: []
     };
     return this;
   }
@@ -73,55 +88,56 @@
   function setURL(url) {
     // Create new object only if url is provided
     if (url) return new HSIndicator(url);
-    // Otherwise try to provide first item in the initialized list.
-    else if (initialized.length > 0 && initialized[0]) return initialized[0];
+    // Otherwise provide list of initialized objects
+    else return initialized;
   }
 
   window.HSIndicator = setURL;
 
   HSIndicator.prototype.resolve = function resolve() {
-    var self = this;
-    $.ajax({
-      type: 'GET',
-      url: this.url,
-      beforeSend: function () {
-        self.callbacks.retry.forEach(function (what) {
-          what();
-        });
-      }
-    }).done(function (result) {
-      console.log(result);
-      var data = versionConverters[result.api](result);
-      if (data.state.open) {
-        self.callbacks.onOpen.forEach(function (what) {
-          what(data);
-        });
+    var self = this,
+      req = new XMLHttpRequest(),
+      i = 0,
+      len;
+    for (i = 0, len = this.callbacks.onRequest.length; i < len; i++) {
+      this.callbacks.onRequest[i]();
+    }
+    req.onreadystatechange = function (aevt) {
+      if (req.readyState === 4) {
+        if (req.status === 200) {
+          getResponse(req.responseText, self.callbacks.isOpen, self.callbacks.isClosed);
+        }
       } else {
-        self.callbacks.onClosed.forEach(function (what) {
-          what(data);
-        });
+        console.log(aevt);
       }
-    }).fail(function (jqXHR, errText, err) {
-      self.callbacks.error.forEach(function (what) {
-        what(errText, err);
-      });
-    });
+    };
+    req.onError = function (error) {
+      for (i = 0, len = this.callbacks.onError.length; i < len; i++) {
+        this.callbacks.onError[i](error);
+      }
+    };
+    req.open('GET', this.url);
+    req.send(null);
   };
 
-  HSIndicator.prototype.onOpen = function onOpen(callback) {
-    this.callbacks.onOpen.push(callback);
+  HSIndicator.prototype.isOpen = function isOpen(callback) {
+    this.callbacks.isOpen.push(callback);
+    return this;
   };
 
-  HSIndicator.prototype.onClosed = function onClosed(callback) {
-    this.callbacks.onClosed.push(callback);
+  HSIndicator.prototype.isClosed = function isClosed(callback) {
+    this.callbacks.isClosed.push(callback);
+    return this;
   };
 
-  HSIndicator.prototype.error = function error(callback) {
-    this.callbacks.error.push(callback);
+  HSIndicator.prototype.onError = function onError(callback) {
+    this.callbacks.onError.push(callback);
+    return this;
   };
 
-  HSIndicator.prototype.retry = function retry(callback) {
-    this.callbacks.retry.push(callback);
+  HSIndicator.prototype.onRequest = function onRequest(callback) {
+    this.callbacks.onRequest.push(callback);
+    return this;
   };
 
   HSIndicator.prototype.start = function start(timeout) {
@@ -131,6 +147,7 @@
     this.resolve();
     this.timer = setInterval(this.resolve.bind(this), timeout);
     initialized.push(this);
+    return this;
   };
 
   HSIndicator.prototype.stop = function stop() {
@@ -138,13 +155,15 @@
       clearInterval(this.timer);
       delete this.timer;
     }
+    return this;
   };
 
   HSIndicator.prototype.stopAll = function stopAll() {
-    initialized.forEach(function (item) {
-      clearInterval(item.timer);
-      item = undefined;
-    });
+    for (var i = 0, len = initialized.length; i < len; i++) {
+      clearInterval(initialized[i].timer);
+    }
+    initialized = [];
+    return this;
   };
 
   HSIndicator.prototype.getInitialized = function getInitialized() {
@@ -152,5 +171,4 @@
   };
 
 
-})(window, jQuery);
-
+})(window);
