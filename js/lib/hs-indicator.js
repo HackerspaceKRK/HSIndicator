@@ -76,25 +76,34 @@
       type: 'GET',
       url: this.url,
       beforeSend: function () {
-        $.each(self.callbacks.retry, function (what) {
-          what();
+        $.each(self.callbacks.retry, function (index, callback) {
+          setTimeout(function () {
+            callback();
+          }, 0);
         });
       }
     }).done(function (result) {
       console.log(result);
       var data = versionConverters[result.api](result);
       if (data.state.open) {
-        $.each(self.callbacks.onOpen, function (what) {
-          what(data);
+        $.each(self.callbacks.onOpen, function (index, callback) {
+          setTimeout(function () {
+            callback(data);
+          }, 0);
         });
       } else {
-        $.each(self.callbacks.onClosed, function (what) {
-          what(data);
+        $.each(self.callbacks.onClosed, function (index, callback) {
+          setTimeout(function () {
+            callback(data);
+          }, 0);
         });
       }
     }).fail(function (jqXHR, errText, err) {
-      $.each(self.callbacks.error, function (what) {
-        what(errText, err);
+      $.each(self.callbacks.error, function (index, callback) {
+        callback(errText, err);
+        setTimeout(function () {
+          callback(errText, err);
+        }, 0);
       });
     });
   };
@@ -154,11 +163,10 @@
     // Create new object only if url is provided
     if (url) instance = new HSIndicator(url);
     // Otherwise try to provide first item in the initialized list.
-    else if (initialized.length > 0 && initialized[0]) instance =  initialized[0];
+    else if (initialized.length > 0 && initialized[0]) instance = initialized[0];
     return instance;
   }
 
   window.HSIndicator = setURL;
 
 })(window, jQuery);
-
