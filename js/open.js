@@ -70,22 +70,13 @@
     return this;
   }
 
-  function setURL(url) {
-    // Create new object only if url is provided
-    if (url) return new HSIndicator(url);
-    // Otherwise try to provide first item in the initialized list.
-    else if (initialized.length > 0 && initialized[0]) return initialized[0];
-  }
-
-  window.HSIndicator = setURL;
-
   HSIndicator.prototype.resolve = function resolve() {
     var self = this;
     $.ajax({
       type: 'GET',
       url: this.url,
       beforeSend: function () {
-        self.callbacks.retry.forEach(function (what) {
+        $.each(self.callbacks.retry, function (what) {
           what();
         });
       }
@@ -93,16 +84,16 @@
       console.log(result);
       var data = versionConverters[result.api](result);
       if (data.state.open) {
-        self.callbacks.onOpen.forEach(function (what) {
+        $.each(self.callbacks.onOpen, function (what) {
           what(data);
         });
       } else {
-        self.callbacks.onClosed.forEach(function (what) {
+        $.each(self.callbacks.onClosed, function (what) {
           what(data);
         });
       }
     }).fail(function (jqXHR, errText, err) {
-      self.callbacks.error.forEach(function (what) {
+      $.each(self.callbacks.error, function (what) {
         what(errText, err);
       });
     });
@@ -110,18 +101,22 @@
 
   HSIndicator.prototype.onOpen = function onOpen(callback) {
     this.callbacks.onOpen.push(callback);
+    return this;
   };
 
   HSIndicator.prototype.onClosed = function onClosed(callback) {
     this.callbacks.onClosed.push(callback);
+    return this;
   };
 
   HSIndicator.prototype.error = function error(callback) {
     this.callbacks.error.push(callback);
+    return this;
   };
 
   HSIndicator.prototype.retry = function retry(callback) {
     this.callbacks.retry.push(callback);
+    return this;
   };
 
   HSIndicator.prototype.start = function start(timeout) {
@@ -131,6 +126,7 @@
     this.resolve();
     this.timer = setInterval(this.resolve.bind(this), timeout);
     initialized.push(this);
+    return this;
   };
 
   HSIndicator.prototype.stop = function stop() {
@@ -138,19 +134,31 @@
       clearInterval(this.timer);
       delete this.timer;
     }
+    return this;
   };
 
   HSIndicator.prototype.stopAll = function stopAll() {
-    initialized.forEach(function (item) {
+    $.each(initialized, function (item) {
       clearInterval(item.timer);
       item = undefined;
     });
+    return this;
   };
 
   HSIndicator.prototype.getInitialized = function getInitialized() {
     return initialized;
   };
 
+  function setURL(url) {
+    var instance;
+    // Create new object only if url is provided
+    if (url) instance = new HSIndicator(url);
+    // Otherwise try to provide first item in the initialized list.
+    else if (initialized.length > 0 && initialized[0]) instance =  initialized[0];
+    return instance;
+  }
+
+  window.HSIndicator = setURL;
 
 })(window, jQuery);
 

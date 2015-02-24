@@ -32,10 +32,14 @@ HSIndicator("http://spaceapi.hskrk.pl").onOpen(function() {
 //HSIndicator("http://hive13.org/isOpen/api.php").onOpen(function() {
     jQuery('#hs-state-container').css('background-color', 'green');
     jQuery('#hs-state').html('OPEN');
-}).onOpen(updateTimestamp).onClosed(function() {
-    jQuery('#hs-state-container').css('background-color', 'red');
-    jQuery('#hs-state').html('CLOSED');
-}).onClosed(updateTimestamp).check();
+// }).onOpen(updateTimestamp).onClosed(function() {
+//     jQuery('#hs-state-container').css('background-color', 'red');
+//     jQuery('#hs-state').html('CLOSED');
+}).onClosed(updateTimestamp)
+.start();
+// }).onClosed(function() {
+
+// });
 
     </script>
   </body>
