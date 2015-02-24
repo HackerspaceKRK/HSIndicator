@@ -4,11 +4,14 @@ var gulp = require('gulp');
 // Load plugins
 var uglify = require("gulp-uglify");
 var jshint = require('gulp-jshint');
-var yuidoc = require("gulp-yuidoc");
+var rename = require('gulp-rename');
 
 gulp.task('uglify', function(){
   return gulp.src('lib/**/*.js')
     .pipe(uglify())
+    .pipe(rename(function (path) {
+         path.extname = ".min.js";
+     }))
     .pipe(gulp.dest("./deploy"));
 });
 
@@ -19,11 +22,10 @@ gulp.task('JSHint', function () {
     .pipe(jshint.reporter('jshint-stylish'));
 });
 
-gulp.task('docs', ['JSHint'], function () {
+gulp.task('copy', function() {
   return gulp.src("lib/**/*.js")
-    .pipe(yuidoc())
-    .pipe(gulp.dest("docs"));
+  .pipe(gulp.dest("./deploy"));
 });
 
 
-gulp.task('default', ['JSHint', 'uglify', 'docs']);
+gulp.task('default', ['JSHint', 'uglify', 'copy']);
