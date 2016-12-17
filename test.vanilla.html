@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Test of HS Open Indicator</title>
+    <script src="js/deploy/hs-indicator-vanilla.min.js"></script>
+  </head>
+  <body>
+    <h1>HS Open Status Indicator</h1>
+    <h2>Examples</h2>
+    <div id="hs-state-container"><del>Hackerspace Kraków</del><ins>bytewerk</ins> is <span id="hs-state"></span><br />
+    Last updated: <span id="hs-timestamp"></span></div>
+    <script>
+      var HS_APIS = {
+        hskrk: "http://spaceapi.hskrk.pl",
+        bytewerk: "http://spaceapi.net/cache/bytewerk",
+        entropia: "http://club.entropia.de/spaceapi",
+        hive13: "http://hive13.org/isOpen/api.php"
+      };
+
+      function updateTimestamp(state) {
+        var statusString = 'Not Available',
+            timestamp = document.getElementById('hs-timestamp');
+        if (state.lastchange) {
+          var date = new Date(state.lastchange * 1000);
+          statusString = date.getDate() + '.' + (date.getMonth() + 1) + '.' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+        }
+        timestamp.innerHTML = statusString;
+      }
+      HSIndicator(HS_APIS.hskrk).onOpen(function () {
+        var container = document.getElementById('hs-state-container'),
+                state = document.getElementById('hs-state');
+            container.style.backgroundColor = 'green';
+            state.innerHTML = 'OPEN';
+      }).onClosed(updateTimestamp)
+              .start();
+    </script>
+  </body>
+</html>
